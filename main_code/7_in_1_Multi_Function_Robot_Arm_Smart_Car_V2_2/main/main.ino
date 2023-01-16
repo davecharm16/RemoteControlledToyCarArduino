@@ -1,5 +1,4 @@
 #include <Servo.h>
-#include <Ultrasonic.h>
 
 String BLE_val;
 
@@ -13,18 +12,7 @@ boolean ClawUp_Flag;
 boolean ClawDown_Flag;
 boolean ClawLeft_Flag;
 boolean ClawRight_Flag;
-boolean Anti_drop_Function_flag;
-boolean Auto_Pick_Flag;
 
-
-boolean object_detected;
-
-int Left_Tra_Value;
-int Center_Tra_Value;
-int Right_Tra_Value;
-int Black_Line;
-
-int distance;
 int default_speed;
 int claw_degrees;
 int arm_degrees;
@@ -33,7 +21,6 @@ int base_degrees;
 Servo myservo1;
 Servo myservo2;
 Servo myservo3;
-Ultrasonic ultrasonic(12,13);
 
 void setup(){
   Serial.begin(9600);
@@ -41,17 +28,11 @@ void setup(){
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
   pinMode(6, OUTPUT);
-  pinMode(7, INPUT);
-  pinMode(8, INPUT);
-  pinMode(A1, INPUT);
-  pinMode(12, OUTPUT);
-  pinMode(13, INPUT);
   myservo1.attach(9);
   myservo2.attach(10);
   myservo3.attach(11);
-  //ultra
   claw_degrees = 90;//initialize the angle value of claw servo 1
-  arm_degrees = 40;//initialize the angle value of arm servo 2
+  arm_degrees = 90;//initialize the angle value of arm servo 2
   base_degrees = 100;//initialize the angle value of base servo 3
 
   myservo1.write(claw_degrees);
@@ -62,19 +43,13 @@ void setup(){
   delay(500);
   Stop();
 
-  Left_Tra_Value = 1;
-  Center_Tra_Value = 1;
-  Right_Tra_Value = 1;
-  Black_Line = 1;
   
   BLE_val = "";
-  Anti_drop_Function_flag = false;
   MoveForward_Flag = false;
   MoveLeft_Flag = false;
   MoveRight_Flag = false;
   MoveBackward_Flag = false;
-  Auto_Pick_Flag = false;
-  
+
   default_speed =130;
 }
 
@@ -116,10 +91,7 @@ void loop(){
      case 'r':
       ClawRight_Function();
       break;
-     case 'P':
-      Auto_Pick();
-      break;
-     
+      
     }
     BLE_val = "";
   }
@@ -127,58 +99,6 @@ void loop(){
     BLE_val = "";  
   }
 }
-
-void Anti_drop_Function() {
-  Anti_drop_Function_flag = true;
-  while (Anti_drop_Function_flag) {
-    Left_Tra_Value = digitalRead(7);
-    Center_Tra_Value = digitalRead(8);
-    Right_Tra_Value = digitalRead(A1);
-    if (Left_Tra_Value != Black_Line && (Center_Tra_Value != Black_Line && Right_Tra_Value != Black_Line)) {
-      MoveForward(90);
-
-    } else {
-      MoveBackward(90);
-      delay(600);
-      MoveRight(100);
-      delay(500);
-
-    }
-    if (Serial.read() == 'S') {
-      Anti_drop_Function_flag = false;
-      Stop();
-
-    }
-  }
-}
-
-void Auto_Pick(){
-    Auto_Pick_Flag = true;
-    while (Auto_Pick_Flag){
-        distance = ultrasonic.read(CM);
-        Serial.print("Distance is ");
-        Serial.print(distance);
-        Serial.print("\n");
-
-        if(distance < 90 && distance > 16){
-            MoveForward(80);
-        }
-        else if (distance <= 15){
-            Stop();
-            Auto_Pick_Flag = false;
-        }
-        else{
-            MoveLeft(80);
-        }
-       
-        
-        if (Serial.read() == 'S') {
-          Auto_Pick_Flag = false;
-          Stop();
-        }
-    }
-}
-
 
 void ClawLeft_Function(){
   ClawLeft_Flag = true;
