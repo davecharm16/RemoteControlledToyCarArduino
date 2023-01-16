@@ -155,29 +155,55 @@ void Anti_drop_Function() {
 void Auto_Pick(){
     Auto_Pick_Flag = true;
     while (Auto_Pick_Flag){
-        distance = ultrasonic.read(CM);
-        Serial.print("Distance is ");
-        Serial.print(distance);
-        Serial.print("\n");
 
-        MoveLeft(100);
-//        if(distance < 90 && distance > 16){
-//            MoveForward(80);
-//        }
-//        else if (distance <= 15){
-//            Stop();
-//            Auto_Pick_Flag = false;
-//        }
-//        else{
-//            MoveLeft(80);
-//        }
-//       
+          if(Detect_Object() == "in"){
+            Stop();
+            while (Detect_Object() == "in"){
+              MoveForward(100);
+              if(Detect_Object() == "front") {
+                Stop();
+                Auto_Pick_Flag = false;
+              } 
+            }
+          }
+          
+//          MoveLeft(100);
+//          delay(100);
+//          Stop();
+//          delay(1000);
+
+          
+//        MoveLeft(100);
+//        delay(500);
+//        Stop();
+//        delay(2000);
+//        MoveRight(100);
+//        delay(500);
+//        Stop();
+//        delay(2000);
         
         if (Serial.read() == 'S') {
           Auto_Pick_Flag = false;
           Stop();
         }
     }
+}
+
+String Detect_Object(){
+        distance = ultrasonic.read(CM);
+        Serial.print("Distance is ");
+        Serial.print(distance);
+        Serial.print("\n");
+
+        if (distance > 90) {
+          return "out";
+        }
+        if(distance <= 90 && distance > 18){
+          return "in";
+        }
+        if(distance <=18){
+           return "front";
+        }
 }
 
 
