@@ -160,17 +160,18 @@ void Auto_Pick(){
         Serial.print(distance);
         Serial.print("\n");
 
-        if(distance < 90 && distance > 16){
-            MoveForward(80);
-        }
-        else if (distance <= 15){
-            Stop();
-            Auto_Pick_Flag = false;
-        }
-        else{
-            MoveLeft(80);
-        }
-       
+        MoveLeft(100);
+//        if(distance < 90 && distance > 16){
+//            MoveForward(80);
+//        }
+//        else if (distance <= 15){
+//            Stop();
+//            Auto_Pick_Flag = false;
+//        }
+//        else{
+//            MoveLeft(80);
+//        }
+//       
         
         if (Serial.read() == 'S') {
           Auto_Pick_Flag = false;
