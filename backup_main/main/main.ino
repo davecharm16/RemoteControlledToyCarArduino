@@ -18,6 +18,7 @@ boolean Auto_Pick_Flag;
 
 
 boolean object_detected;
+boolean reseted;
 
 int Left_Tra_Value;
 int Center_Tra_Value;
@@ -74,6 +75,7 @@ void setup(){
   MoveRight_Flag = false;
   MoveBackward_Flag = false;
   Auto_Pick_Flag = false;
+  reseted = false;
   
   default_speed =130;
 }
@@ -100,24 +102,31 @@ void loop(){
       break;
      case 'c':
       ClawClose_Function();
+      reseted = false;
       break;
      case 'o':
       ClawOpen_Function();
+      reseted = false;
       break;
      case 'u':
       ClawUp_Function();
+      reseted = false;
       break;
      case 'd':
       ClawDown_Function();
+      reseted = false;
       break;
      case 'l':
       ClawLeft_Function();
+      reseted = false;
       break;
      case 'r':
       ClawRight_Function();
+      reseted = false;
       break;
      case 'P':
       Auto_Pick();
+      reseted = false;
       break;
      
     }
@@ -156,11 +165,20 @@ void Auto_Pick(){
     Auto_Pick_Flag = true;
     while (Auto_Pick_Flag){
 
+          if(!reseted){
+              Reset_Servos();
+              reseted = true;
+              delay(1000);
+          }
+
           if(Detect_Object() == "in"){
             Stop();
             while (Detect_Object() == "in"){
               MoveForward(100);
+              delay(100);
+              Stop();
               if(Detect_Object() == "front") {
+                Pick();
                 Stop();
                 Auto_Pick_Flag = false;
               } 
@@ -206,6 +224,54 @@ String Detect_Object(){
         }
 }
 
+void Reset_Servos(){
+    //get to base position all the arms abnd claws
+    claw_degrees = 90;
+    base_degrees = 100;
+    arm_degrees = 20;
+
+    myservo1.write(claw_degrees);
+    delay(500);
+    myservo2.write(arm_degrees);
+    delay(500);
+    myservo3.write(base_degrees);
+    delay(500);
+    Stop();
+}
+
+
+//Pick Function for the auto_pick
+void Pick(){
+  ClawDown();
+  ClawGrab();
+  ClawUp();
+}
+
+
+
+void ClawDown(){
+  for(int i = 20; i <= 130; i++){
+      myservo2.write(i);
+     delay(10);
+  }
+}
+
+//Claw Lift Up for Pick Function
+void ClawUp(){
+  for(int i = 130; i >= 20; i--){
+    //servo 2 Arm
+     myservo2.write(i);
+     delay(10);
+  }
+}
+
+//Grabing of Claw in the Pick Function
+void ClawGrab(){
+  for(int i = 90; i <= 180; i++){
+    myservo1.write(i);
+    delay(10);
+  }
+}
 
 void ClawLeft_Function(){
   ClawLeft_Flag = true;
