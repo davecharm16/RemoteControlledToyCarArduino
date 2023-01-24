@@ -19,6 +19,7 @@ boolean Auto_Pick_Flag;
 
 boolean object_detected;
 boolean reseted;
+boolean left_filled;  
 
 int Left_Tra_Value;
 int Center_Tra_Value;
@@ -76,6 +77,7 @@ void setup(){
   MoveBackward_Flag = false;
   Auto_Pick_Flag = false;
   reseted = false;
+  left_filled = true;
   
   default_speed =130;
 }
@@ -245,15 +247,50 @@ void Pick(){
   ClawDown();
   ClawGrab();
   ClawUp();
+
+  if(left_filled){
+    ClawRight();
+    left_filled = false;
+  }
+  else{
+    ClawLeft();
+    left_filled = true;
+  }
+  ClawOpen();
 }
 
+void ClawRight(){
 
+  for(int i = 100; i >= 0; i--){
+    myservo3.write(i);
+    delay(10);
+  }
+  
+}
+
+void ClawLeft(){
+    for(int i = 100; i <= 180; i++){
+    myservo3.write(i);
+    delay(10);
+  }
+}
+
+void ClawOpen(){
+  
+  for(int i = 180; i>=90; i--){
+    myservo1.write(i);
+    delay(10);
+  }
+  
+}
 
 void ClawDown(){
+  
   for(int i = 20; i <= 130; i++){
       myservo2.write(i);
      delay(10);
   }
+  
 }
 
 //Claw Lift Up for Pick Function
